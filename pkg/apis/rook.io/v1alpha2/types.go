@@ -67,6 +67,8 @@ type Selection struct {
 	Devices []Device `json:"devices,omitempty"`
 
 	Directories []Directory `json:"directories,omitempty"`
+	// PersistentVolumeClaims to use as storage
+	VolumeClaimTemplates []v1.PersistentVolumeClaim `json:"volumeClaimTemplates,omitempty"`
 }
 
 type PlacementSpec map[string]Placement
