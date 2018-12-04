@@ -86,6 +86,12 @@ To get a cqlsh shell in your new Cluster:
 The operator supports scale up of a rack as well as addition of new racks. To make the changes, you can use `kubectl edit clusters.cassandra.rook.io rook-cassandra`:
  * To scale up a rack, change the `Spec.Members` field of the rack to the desired value.
  * To add a new rack, append the `racks` list with a new rack. Remember to choose a different rack name for the new rack.
+ 
+## Scale Down
+
+The operator supports scale down of a rack. To make the changes, you can use `kubectl edit clusters.cassandra.rook.io rook-cassandra`:
+ * To scale down a rack, change the `Spec.Members` field of the rack to the desired value.
+
   
 ## Clean Up
  
