@@ -14,19 +14,32 @@ const (
 	// existing.
 	ErrSyncFailed = "ErrSyncFailed"
 
-	MessageRackCreated  = "Rack %s created"
-	MessageRackScaledUp = "Rack %s scaled up to %d members"
+	MessageRackCreated             = "Rack %s created"
+	MessageRackScaledUp            = "Rack %s scaled up to %d members"
+	MessageRackScaleDownInProgress = "Rack %s scaling down to %d members"
+	MessageRackScaledDown          = "Rack %s scaled down to %d members"
 
 	// Messages to display when experiencing an error.
 	MessageHeadlessServiceSyncFailed = "Failed to sync Headless Service for cluster"
 	MessageMemberServicesSyncFailed  = "Failed to sync MemberServices for cluster"
 	MessageUpdateStatusFailed        = "Failed to update status for cluster"
+	MessageCleanupFailed             = "Failed to clean up cluster resources"
 	MessageClusterSyncFailed         = "Failed to sync cluster"
 )
 
 // Sync attempts to sync the given Cassandra Cluster.
 // NOTE: the Cluster Object is a DeepCopy. Modify at will.
 func (cc *ClusterController) Sync(c *cassandrav1alpha1.Cluster) error {
+
+	// Cleanup Cluster resources
+	if err := cc.cleanup(c); err != nil {
+		cc.recorder.Event(
+			c,
+			corev1.EventTypeWarning,
+			ErrSyncFailed,
+			MessageCleanupFailed,
+		)
+	}
 
 	// Sync Headless Service for Cluster
 	if err := cc.syncClusterHeadlessService(c); err != nil {
