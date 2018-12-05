@@ -24,6 +24,10 @@ const (
 	// either way. Currently useful for scylla, may get removed
 	// once configMapName field is implemented in Cluster CRD.
 	DeveloperModeAnnotation = "cassandra.rook.io/developer-mode"
+	// CPUPinningAnnotation is present when the user has enabled
+	// the CPU-Manager static policy and wants scylla to use
+	// cpu pinning for improved performance.
+	CPUPinningAnnotation = "cassandra.rook.io/cpu-pinning"
 
 	LabelValueTrue  = "true"
 	LabelValueFalse = "false"

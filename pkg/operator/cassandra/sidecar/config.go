@@ -2,6 +2,7 @@ package sidecar
 
 import (
 	"fmt"
+	linuxproc "github.com/c9s/goprocinfo/linux"
 	"github.com/ghodss/yaml"
 	cassandrav1alpha1 "github.com/rook/rook/pkg/apis/cassandra.rook.io/v1alpha1"
 	"github.com/rook/rook/pkg/operator/cassandra/constants"
@@ -240,7 +241,7 @@ func (m *MemberController) scyllaEntrypoint() (string, error) {
 		devMode = "1"
 	}
 
-	// Get cpu cores
+	// Get number of cpu cores
 	cpu := os.Getenv(constants.ResourceLimitCPUEnvVar)
 	if cpu == "" {
 		return "", fmt.Errorf("%s env variable not found", constants.ResourceLimitCPUEnvVar)
@@ -286,6 +287,24 @@ func (m *MemberController) scyllaEntrypoint() (string, error) {
 			flag:  "memory",
 			value: mem,
 		},
+	}
+
+	// Get specific cpu cores (pinning)
+	if c.Annotations[constants.CPUPinningAnnotation] == constants.LabelValueTrue {
+		s, err := linuxproc.ReadProcessStatus("/proc/1/status")
+		if err != nil {
+			return "", fmt.Errorf("failed to get process status: %s", err.Error())
+		}
+		cores, _ := strconv.Atoi(cpu)
+		if len(s.CpusAllowed) == cores {
+			cpusAllowed := strings.Trim(strings.Join(strings.Fields(fmt.Sprint(s.CpusAllowed)), ","), "[]")
+			opts = append(opts, struct {
+				flag, value string
+			}{
+				flag:  "cpuset",
+				value: cpusAllowed,
+			})
+		}
 	}
 
 	entrypoint := "#!/bin/sh" + "\n" + "exec /docker-entrypoint.py"

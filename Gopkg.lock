@@ -85,6 +85,14 @@
   revision = "3a771d992973f24aa725d07868b467d1ddfceafb"
 
 [[projects]]
+  branch = "master"
+  digest = "1:080689a7cb710dc8f694005f8e5b3aab861d01e885eaf53fae54431c4635bfe6"
+  name = "github.com/c9s/goprocinfo"
+  packages = ["linux"]
+  pruneopts = "UT"
+  revision = "0010a05ce49fde7f50669bc7ecda7d41dd6ab824"
+
+[[projects]]
   digest = "1:4f618dd2213260a992922925a03349430af6994d8a481c53280703732e5bc4ab"
   name = "github.com/coreos/etcd"
   packages = [
@@ -1266,6 +1274,7 @@
     "github.com/aws/aws-sdk-go/aws/credentials",
     "github.com/aws/aws-sdk-go/aws/session",
     "github.com/aws/aws-sdk-go/service/s3",
+    "github.com/c9s/goprocinfo/linux",
     "github.com/coreos/pkg/capnslog",
     "github.com/davecgh/go-spew/spew",
     "github.com/ghodss/yaml",
