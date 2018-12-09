@@ -175,6 +175,37 @@ func (m *MemberController) Run(threadiness int, stopCh <-chan struct{}) error {
 
 }
 
+// onStartup is executed before the MemberController starts
+// its sync loop.
+func (m *MemberController) onStartup() error {
+
+	// Setup HTTP checks
+	m.logger.Info("Setting up HTTP Checks...")
+	go func() {
+		err := m.setupHTTPChecks()
+		m.logger.Fatalf("Error with HTTP Server: %s", err.Error())
+		panic("Something went wrong with the HTTP Checks")
+	}()
+
+	// Prepare config files for Cassandra
+	m.logger.Infof("Generating cassandra config files...")
+	if err := m.generateConfigFiles(); err != nil {
+		return fmt.Errorf("error generating config files: %s", err.Error())
+	}
+
+	// Start the database daemon
+	cmd := exec.Command(entrypointPath)
+	cmd.Stderr = os.Stderr
+	cmd.Stdout = os.Stdout
+	cmd.Env = os.Environ()
+	if err := cmd.Start(); err != nil {
+		m.logger.Errorf("error starting database daemon: %s", err.Error())
+		return err
+	}
+
+	return nil
+}
+
 func (m *MemberController) runWorker() {
 	for m.processNextWorkItem() {
 	}
@@ -234,37 +265,6 @@ func (m *MemberController) syncHandler(key string) error {
 	err = m.Sync(svc)
 
 	return err
-}
-
-// onStartup is executed before the MemberController starts
-// its sync loop.
-func (m *MemberController) onStartup() error {
-
-	// Setup HTTP checks
-	m.logger.Info("Setting up HTTP Checks...")
-	go func() {
-		err := m.setupHTTPChecks()
-		m.logger.Fatalf("Error with HTTP Server: %s", err.Error())
-		panic("Something went wrong with the HTTP Checks")
-	}()
-
-	// Prepare config files for Cassandra
-	m.logger.Infof("Generating cassandra config files...")
-	if err := m.generateConfigFiles(); err != nil {
-		return fmt.Errorf("error generating config files: %s", err.Error())
-	}
-
-	// Start the database daemon
-	cmd := exec.Command(entrypointPath)
-	cmd.Stderr = os.Stderr
-	cmd.Stdout = os.Stdout
-	cmd.Env = os.Environ()
-	if err := cmd.Start(); err != nil {
-		m.logger.Errorf("error starting database daemon: %s", err.Error())
-		return err
-	}
-
-	return nil
 }
 
 func (m *MemberController) enqueueMemberService(obj metav1.Object) {

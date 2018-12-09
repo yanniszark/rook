@@ -97,7 +97,7 @@ func StatefulSetForRack(r cassandrav1alpha1.RackSpec, c *cassandrav1alpha1.Clust
 						{
 							Name:            "rook-install",
 							Image:           rookImage,
-							ImagePullPolicy: "IfNotPresent",
+							ImagePullPolicy: "Always",
 							Command: []string{
 								"/bin/sh",
 								"-c",

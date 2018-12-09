@@ -69,9 +69,11 @@ kind: Cluster
 metadata:
   name: rook-cassandra
   namespace: rook-cassandra
+  annotations:
+    cassandra.rook.io/developer-mode: "true"
 spec:
-  version: 3.11.1
-  mode: cassandra
+  version: 2.3.0
+  mode: scylla
   datacenter:
     name: us-east-1
     racks:
