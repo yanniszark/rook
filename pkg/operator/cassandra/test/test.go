@@ -26,6 +26,7 @@ import (
 )
 
 func NewSimpleCluster(members int32) *cassandrav1alpha1.Cluster {
+
 	return &cassandrav1alpha1.Cluster{
 		TypeMeta: metav1.TypeMeta{
 			APIVersion: cassandrav1alpha1.APIVersion,
