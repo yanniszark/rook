@@ -195,4 +195,13 @@ data:
 
 ConfigMap's data field must contain `jmx_exporter_config.yaml` key with jmx exporter settings.
 
-There is no automatic reloading mechanism for pods when the config map updated. After the configmap changed, you should restart all rack pods manually.
+There is no automatic reloading mechanism for pods when the config map updated.
+After the configmap changed, you should restart all rack pods manually:
+
+```bash
+NAMESPACE=<namespace>
+CLUSTER=<cluster_name>
+
+RACKS=$(kubectl get sts -n ${NAMESPACE} -l "cassandra.rook.io/cluster=${CLUSTER}")
+echo ${RACKS} | xargs -n1 kubectl rollout restart -n ${NAMESPACE}
+```
